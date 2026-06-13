@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#eff6ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="二次関数演習">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <title>二次関数演習アプリ</title>
+  <style>
+    :root {
+      --bg: #f5f8ff;
+      --bg-deep: #eaf2ff;
+      --panel: rgba(255, 255, 255, 0.88);
+      --panel-solid: #ffffff;
+      --text: #1d2638;
+      --muted: #66728b;
+      --line: rgba(29, 38, 56, 0.10);
+      --shadow: 0 16px 36px rgba(24, 40, 72, 0.10);
+      --shadow-soft: 0 10px 24px rgba(24, 40, 72, 0.08);
+      --primary: #2563eb;
+      --primary-strong: #1d4ed8;
+      --accent: #0f766e;
+      --accent-soft: #dff7f3;
+      --warning: #d97706;
+      --success: #15803d;
+      --danger: #dc2626;
+      --chip: #eef4ff;
+      --chip-active: #dbeafe;
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --page-max: 720px;
+      --safe-bottom: max(12px, env(safe-area-inset-bottom));
+      --safe-top: max(12px, env(safe-area-inset-top));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--text);
+      font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: 0.01em;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.12), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(15, 118, 110, 0.10), transparent 26%),
+        radial-gradient(circle at 70% 90%, rgba(217, 119, 6, 0.08), transparent 24%),
+        linear-gradient(180deg, var(--bg) 0%, #fbfcff 62%, #f8fbff 100%);
+      overflow-x: hidden;
+      position: relative;
+      isolation: isolate;
+      -webkit-tap-highlight-color: transparent;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.28;
+      background-image:
+        linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 95%);
+      z-index: -1;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: inherit;
+      padding: 0;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.28);
+      outline-offset: 2px;
+    }
+
+    #app {
+      min-height: 100dvh;
+    }
+
+    .screen {
+      width: 100%;
+      min-height: 100dvh;
+      padding: var(--safe-top) 0 calc(22px + var(--safe-bottom));
+    }
+
+    .question-mode {
+      overflow: hidden;
+    }
+
+    .page-inner {
+      width: min(calc(100% - 24px), var(--page-max));
+      margin: 0 auto;
+    }
+
+    .screen-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border: 1px solid rgba(37, 99, 235, 0.10);
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76)),
+        linear-gradient(135deg, rgba(219, 234, 254, 0.65), rgba(223, 247, 243, 0.55));
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -30px -40px auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary-strong);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h1,
+    .section-title,
+    .panel-title {
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.7rem, 5.5vw, 2.5rem);
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: var(--panel);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel + .panel {
+      margin-top: 16px;
+    }
+
+    .panel-title {
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .count-buttons,
+    .chip-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .chip-grid {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .count-buttons {
+      grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+    }
+
+    .mode-btn,
+    .chip-btn,
+    .primary-btn,
+    .ghost-btn,
+    .key-btn,
+    .field-btn {
+      border-radius: 18px;
+      transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+    }
+
+    .mode-btn,
+    .chip-btn,
+    .primary-btn,
+    .ghost-btn {
+      min-height: 52px;
+      padding: 12px 14px;
+      font-weight: 700;
+    }
+
+    .mode-btn,
+    .chip-btn,
+    .ghost-btn {
+      border: 1px solid var(--line);
+      background: var(--panel-solid);
+      box-shadow: 0 8px 18px rgba(17, 24, 39, 0.05);
+    }
+
+    .mode-btn {
+      display: grid;
+      gap: 4px;
+      text-align: left;
+      align-content: start;
+    }
+
+    .mode-btn .small {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .primary-btn {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-strong));
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+    }
+
+    .primary-btn:active,
+    .mode-btn:active,
+    .chip-btn:active,
+    .ghost-btn:active,
+    .key-btn:active,
+    .field-btn:active {
+      transform: translateY(1px);
+    }
+
+    .ghost-btn {
+      color: var(--text);
+      min-height: 44px;
+      padding-inline: 14px;
+    }
+
+    .mode-btn.is-active,
+    .chip-btn.is-active {
+      border-color: rgba(37, 99, 235, 0.45);
+      background: linear-gradient(180deg, #ffffff, #eff6ff);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+    }
+
+    .setup-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .setup-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .history-empty {
+      padding: 16px;
+      border: 1px dashed rgba(102, 114, 139, 0.24);
+      border-radius: var(--radius-md);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .history-item {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 8px 16px rgba(17, 24, 39, 0.04);
+    }
+
+    .history-top,
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge {
+      color: var(--primary-strong);
+      background: var(--chip);
+    }
+
+    .pill {
+      color: var(--muted);
+      background: rgba(102, 114, 139, 0.08);
+    }
+
+    .meta-line {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .history-score {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .history-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .section-block + .section-block {
+      margin-top: 16px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .section-head .subtle {
+      margin: 0;
+    }
+
+    .question-screen {
+      height: 100dvh;
+      padding: var(--safe-top) 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .question-scroll {
+      flex: 1;
+      overflow: auto;
+      padding: 0 0 12px;
+    }
+
+    .question-shell {
+      width: min(calc(100% - 24px), var(--page-max));
+      margin: 0 auto;
+      padding-bottom: 10px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .topbar .left,
+    .topbar .right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .progress {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .hero-card {
+      padding: 18px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .question-summary {
+      display: grid;
+      gap: 12px;
+    }
+
+    .question-statement {
+      color: var(--text);
+      font-size: 1.02rem;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .math-line {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .equation {
+      display: inline-flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.12em;
+      line-height: 1.4;
+      font-size: clamp(1.18rem, 4.4vw, 1.56rem);
+      font-weight: 800;
+      color: #18345e;
+      word-break: break-word;
+    }
+
+    .equation .term {
+      display: inline-flex;
+      gap: 0.08em;
+      white-space: nowrap;
+    }
+
+    .graph-frame {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 22px;
+      border: 1px solid rgba(37, 99, 235, 0.12);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.96));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .graph-canvas {
+      display: block;
+      width: 100%;
+      height: clamp(240px, 66vw, 360px);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    }
+
+    .graph-legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .fields-panel {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field-btn {
+      display: grid;
+      gap: 6px;
+      align-content: start;
+      min-height: 92px;
+      padding: 14px 12px;
+      border: 1px solid var(--line);
+      background: rgba(248, 251, 255, 0.9);
+      text-align: left;
+    }
+
+    .field-btn.is-active {
+      border-color: rgba(37, 99, 235, 0.46);
+      background: linear-gradient(180deg, #ffffff, #eef6ff);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.12);
+    }
+
+    .field-btn.is-error {
+      border-color: rgba(220, 38, 38, 0.45);
+      background: linear-gradient(180deg, #fff, #fff5f5);
+    }
+
+    .field-label {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .field-value {
+      min-height: 2.2em;
+      color: var(--text);
+      font-size: 1.06rem;
+      font-weight: 800;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .field-placeholder {
+      color: rgba(102, 114, 139, 0.72);
+      font-weight: 700;
+    }
+
+    .field-hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: var(--radius-xl);
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .feedback.success {
+      border-color: rgba(21, 128, 61, 0.18);
+      background: linear-gradient(180deg, #fbfffc, #f4fff7);
+    }
+
+    .feedback.wrong {
+      border-color: rgba(220, 38, 38, 0.18);
+      background: linear-gradient(180deg, #fffafb, #fff5f5);
+    }
+
+    .feedback.error {
+      border-color: rgba(217, 119, 6, 0.18);
+      background: linear-gradient(180deg, #fffcf6, #fff9ee);
+    }
+
+    .feedback-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 1.02rem;
+      font-weight: 900;
+    }
+
+    .feedback-title .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .feedback.success .status {
+      background: var(--success);
+    }
+
+    .feedback.wrong .status {
+      background: var(--danger);
+    }
+
+    .feedback.error .status {
+      background: var(--warning);
+    }
+
+    .feedback-body {
+      display: grid;
+      gap: 10px;
+    }
+
+    .comparison-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .comparison-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(29, 38, 56, 0.08);
+      font-size: 0.95rem;
+    }
+
+    .comparison-row strong {
+      font-size: 1rem;
+      text-align: right;
+    }
+
+    .feedback-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    .keypad-shell {
+      border-top: 1px solid rgba(29, 38, 56, 0.10);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 249, 255, 0.98));
+      box-shadow: 0 -10px 30px rgba(24, 40, 72, 0.08);
+      padding: 12px 0 calc(12px + var(--safe-bottom));
+      backdrop-filter: blur(12px);
+    }
+
+    .keypad-inner {
+      width: min(calc(100% - 24px), var(--page-max));
+      margin: 0 auto;
+      display: grid;
+      gap: 10px;
+    }
+
+    .keypad-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .keypad-meta .subtle {
+      margin: 0;
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .key-btn {
+      min-height: 54px;
+      padding: 0 10px;
+      border: 1px solid rgba(29, 38, 56, 0.08);
+      background: linear-gradient(180deg, #ffffff, #f4f8ff);
+      box-shadow: 0 8px 16px rgba(17, 24, 39, 0.05);
+      font-size: 1rem;
+      font-weight: 800;
+      color: #20304f;
+    }
+
+    .key-btn.is-accent {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #14b8a6);
+      border-color: rgba(15, 118, 110, 0.28);
+    }
+
+    .key-btn.is-danger {
+      color: #fff;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-color: rgba(220, 38, 38, 0.18);
+    }
+
+    .key-btn.is-secondary {
+      background: linear-gradient(180deg, #fbfdff, #eef4ff);
+    }
+
+    .key-btn span {
+      pointer-events: none;
+    }
+
+    .result-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(21, 128, 61, 0.12);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 255, 248, 0.90)),
+        linear-gradient(135deg, rgba(223, 247, 243, 0.72), rgba(219, 234, 254, 0.58));
+      box-shadow: var(--shadow);
+    }
+
+    .result-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -18px -28px auto;
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(21, 128, 61, 0.14), transparent 70%);
+    }
+
+    .result-score {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .result-score .big {
+      font-size: clamp(2.2rem, 9vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1;
+      color: #166534;
+    }
+
+    .result-score .small {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .summary-card {
+      padding: 14px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.90);
+      box-shadow: 0 8px 16px rgba(17, 24, 39, 0.04);
+    }
+
+    .summary-card .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .summary-card .value {
+      margin-top: 6px;
+      font-size: 1.02rem;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .review-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .review-item {
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.90);
+      box-shadow: 0 8px 16px rgba(17, 24, 39, 0.04);
+    }
+
+    .review-item.is-wrong {
+      border-color: rgba(220, 38, 38, 0.22);
+      background: linear-gradient(180deg, #fff, #fff7f7);
+    }
+
+    .review-item.is-correct {
+      border-color: rgba(21, 128, 61, 0.16);
+      background: linear-gradient(180deg, #fff, #f6fff8);
+    }
+
+    .review-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .review-question {
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .review-answer {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .review-answer strong {
+      color: var(--text);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 540px) {
+      .screen {
+        padding-bottom: 18px;
+      }
+
+      .mode-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .field-grid,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .keypad-grid {
+        gap: 7px;
+      }
+
+      .key-btn {
+        min-height: 52px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .hero,
+      .panel,
+      .hero-card,
+      .fields-panel,
+      .feedback,
+      .graph-frame,
+      .result-hero {
+        border-radius: 22px;
+      }
+
+      .page-inner,
+      .question-shell,
+      .keypad-inner {
+        width: min(calc(100% - 18px), var(--page-max));
+      }
+
+      .field-btn {
+        min-height: 86px;
+        padding: 12px 10px;
+      }
+
+      .key-btn {
+        min-height: 50px;
+        font-size: 0.96rem;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeUp 180ms ease-out;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "quadratic-exercise-results-v1";
+      const MAX_HISTORY = 30;
+      const GRAPH_LIMIT = 10;
+      const DISPLAY_LIMIT = 10;
+
+      const app = document.getElementById("app");
+      const state = {
+        screen: "home",
+        settings: {
+          specificPattern: 1,
+          analysisLevel: 1,
+          questionCount: 10,
+        },
+        results: loadResults(),
+        session: null,
+        lastResultSummary: null,
+      };
+
+      class Fraction {
+        constructor(numerator, denominator = 1n) {
+          if (typeof numerator === "number") numerator = BigInt(numerator);
+          if (typeof denominator === "number") denominator = BigInt(denominator);
+          if (denominator === 0n) {
+            throw new Error("Denominator must not be zero.");
+          }
+          if (numerator === 0n) {
+            this.n = 0n;
+            this.d = 1n;
+            return;
+          }
+          if (denominator < 0n) {
+            numerator = -numerator;
+            denominator = -denominator;
+          }
+          const divisor = gcd(absBigInt(numerator), denominator);
+          this.n = numerator / divisor;
+          this.d = denominator / divisor;
+        }
+
+        static from(value) {
+          if (value instanceof Fraction) return value.clone();
+          if (typeof value === "bigint" || typeof value === "number") {
+            return new Fraction(value, 1n);
+          }
+          throw new Error("Unsupported fraction value.");
+        }
+
+        static parse(text) {
+          const trimmed = String(text ?? "").trim().replace(/\s+/g, "");
+          if (!trimmed) {
+            throw new Error("empty");
+          }
+          if (!/^[+-]?\d+(\/\d+)?$/.test(trimmed)) {
+            throw new Error("format");
+          }
+          const parts = trimmed.split("/");
+          if (parts.length === 1) {
+            return new Fraction(BigInt(parts[0]), 1n);
+          }
+          if (parts.length === 2) {
+            const numerator = BigInt(parts[0]);
+            const denominator = BigInt(parts[1]);
+            if (denominator === 0n) {
+              throw new Error("zero-denominator");
+            }
+            return new Fraction(numerator, denominator);
+          }
+          throw new Error("format");
+        }
+
+        clone() {
+          return new Fraction(this.n, this.d);
+        }
+
+        add(other) {
+          other = Fraction.from(other);
+          return new Fraction(this.n * other.d + other.n * this.d, this.d * other.d);
+        }
+
+        sub(other) {
+          other = Fraction.from(other);
+          return new Fraction(this.n * other.d - other.n * this.d, this.d * other.d);
+        }
+
+        mul(other) {
+          other = Fraction.from(other);
+          return new Fraction(this.n * other.n, this.d * other.d);
+        }
+
+        div(other) {
+          other = Fraction.from(other);
+          if (other.n === 0n) {
+            throw new Error("division-by-zero");
+          }
+          return new Fraction(this.n * other.d, this.d * other.n);
+        }
+
+        neg() {
+          return new Fraction(-this.n, this.d);
+        }
+
+        abs() {
+          return new Fraction(absBigInt(this.n), this.d);
+        }
+
+        square() {
+          return this.mul(this);
+        }
+
+        eq(other) {
+          other = Fraction.from(other);
+          return this.n === other.n && this.d === other.d;
+        }
+
+        isZero() {
+          return this.n === 0n;
+        }
+
+        isInteger() {
+          return this.d === 1n;
+        }
+
+        toNumber() {
+          return Number(this.n) / Number(this.d);
+        }
+
+        toString() {
+          if (this.d === 1n) {
+            return String(this.n);
+          }
+          return `${this.n}/${this.d}`;
+        }
+      }
+
+      function absBigInt(value) {
+        return value < 0n ? -value : value;
+      }
+
+      function gcd(a, b) {
+        a = absBigInt(a);
+        b = absBigInt(b);
+        while (b !== 0n) {
+          const remainder = a % b;
+          a = b;
+          b = remainder;
+        }
+        return a === 0n ? 1n : a;
+      }
+
+      function F(n, d = 1) {
+        return new Fraction(n, d);
+      }
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function pick(list) {
+        return list[randInt(0, list.length - 1)];
+      }
+
+      function range(min, max) {
+        const values = [];
+        for (let i = min; i <= max; i += 1) {
+          values.push(i);
+        }
+        return values;
+      }
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll("\"", "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function formatFraction(value) {
+        return Fraction.from(value).toString();
+      }
+
+      function formatValue(value) {
+        return formatFraction(value);
+      }
+
+      function isWithinDisplayRange(value, limit = DISPLAY_LIMIT) {
+        return Math.abs(Fraction.from(value).toNumber()) <= limit + 1e-9;
+      }
+
+      function evaluateQuadratic(a, b, c, x) {
+        return a.mul(x.square()).add(b.mul(x)).add(c);
+      }
+
+      function formatCoefficientTerm(coef, symbol, first = false) {
+        coef = Fraction.from(coef);
+        if (coef.isZero()) {
+          return "";
+        }
+
+        const negative = coef.n < 0n;
+        const absCoef = coef.abs();
+        const core = absCoef.eq(F(1)) ? symbol : `${escapeHtml(absCoef.toString())}${symbol}`;
+
+        if (first) {
+          return negative ? `-${core}` : core;
+        }
+        return negative ? ` - ${core}` : ` + ${core}`;
+      }
+
+      function formatConstantTerm(coef, first = false) {
+        coef = Fraction.from(coef);
+        if (coef.isZero()) {
+          return "";
+        }
+        const negative = coef.n < 0n;
+        const absCoef = coef.abs();
+        const core = escapeHtml(absCoef.toString());
+        if (first) {
+          return negative ? `-${core}` : core;
+        }
+        return negative ? ` - ${core}` : ` + ${core}`;
+      }
+
+      function formatQuadraticEquation(a, b, c) {
+        const first = formatCoefficientTerm(a, "x<sup>2</sup>", true);
+        const second = formatCoefficientTerm(b, "x", false);
+        const third = formatConstantTerm(c, false);
+        return `y = ${first}${second}${third}`;
+      }
+
+      function formatPoint(label, x, y) {
+        return `${label}(${formatValue(x)}, ${formatValue(y)})`;
+      }
+
+      function formatAxis(axisX) {
+        return `x = ${formatValue(axisX)}`;
+      }
+
+      function formatAccuracy(correctCount, totalCount) {
+        if (!totalCount) return "0%";
+        const value = Math.round((correctCount / totalCount) * 1000) / 10;
+        return Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`;
+      }
+
+      function formatDateTime(isoString) {
+        const date = new Date(isoString);
+        return new Intl.DateTimeFormat("ja-JP", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(date);
+      }
+
+      function loadResults() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .filter((item) => item && typeof item === "object")
+            .map((item) => ({
+              id: String(item.id ?? cryptoRandomId()),
+              timestamp: String(item.timestamp ?? new Date().toISOString()),
+              modeLabel: String(item.modeLabel ?? ""),
+              variantLabel: String(item.variantLabel ?? ""),
+              totalQuestions: Number(item.totalQuestions ?? 0),
+              correctCount: Number(item.correctCount ?? 0),
+              accuracy: String(item.accuracy ?? "0%"),
+              details: Array.isArray(item.details) ? item.details : [],
+            }))
+            .slice(0, MAX_HISTORY);
+        } catch {
+          return [];
+        }
+      }
+
+      function saveResults(results) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(results.slice(0, MAX_HISTORY)));
+        } catch {
+          // localStorage is best-effort.
+        }
+      }
+
+      function cryptoRandomId() {
+        if (window.crypto && crypto.getRandomValues) {
+          const array = new Uint32Array(2);
+          crypto.getRandomValues(array);
+          return `${array[0].toString(16)}-${array[1].toString(16)}`;
+        }
+        return `${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
+      }
+
+      function createEmptyInputs(modeKey) {
+        if (modeKey === "specific") {
+          return { a: "", b: "", c: "" };
+        }
+        return { vertexX: "", vertexY: "", axisX: "" };
+      }
+
+      function getFieldOrder(modeKey) {
+        if (modeKey === "specific") {
+          return ["a", "b", "c"];
+        }
+        return ["vertexX", "vertexY", "axisX"];
+      }
+
+      function getFieldLabel(modeKey, field) {
+        if (modeKey === "specific") {
+          return { a: "a", b: "b", c: "c" }[field] ?? field;
+        }
+        return {
+          vertexX: "頂点 x 座標",
+          vertexY: "頂点 y 座標",
+          axisX: "軸 x =",
+        }[field] ?? field;
+      }
+
+      function getFieldPlaceholder() {
+        return "タップして入力";
+      }
+
+      function getCurrentSession() {
+        return state.session;
+      }
+
+      function getCurrentQuestion() {
+        const session = getCurrentSession();
+        if (!session) return null;
+        return session.questions[session.index] ?? null;
+      }
+
+      function setScreen(screen) {
+        state.screen = screen;
+        document.body.classList.toggle("question-mode", screen === "question");
+        render();
+      }
+
+      function openHome() {
+        state.session = null;
+        state.screen = "home";
+        document.body.classList.remove("question-mode");
+        render();
+      }
+
+      function openSpecificSetup() {
+        state.screen = "specific-setup";
+        document.body.classList.remove("question-mode");
+        render();
+      }
+
+      function openAnalysisSetup() {
+        state.screen = "analysis-setup";
+        document.body.classList.remove("question-mode");
+        render();
+      }
+
+      function startSpecificSession() {
+        const pattern = state.settings.specificPattern;
+        const totalQuestions = state.settings.questionCount;
+        const questions = [];
+        for (let i = 0; i < totalQuestions; i += 1) {
+          questions.push(generateSpecificQuestion(pattern));
+        }
+        state.session = {
+          modeKey: "specific",
+          modeLabel: "特定モード",
+          variantLabel: `パターン${pattern}`,
+          totalQuestions,
+          questions,
+          index: 0,
+          correctCount: 0,
+          inputs: createEmptyInputs("specific"),
+          activeField: "a",
+          submitted: false,
+          feedback: null,
+          answerLog: [],
+        };
+        setScreen("question");
+      }
+
+      function startAnalysisSession() {
+        const level = state.settings.analysisLevel;
+        const totalQuestions = state.settings.questionCount;
+        const questions = [];
+        for (let i = 0; i < totalQuestions; i += 1) {
+          questions.push(generateAnalysisQuestion(level));
+        }
+        state.session = {
+          modeKey: "analysis",
+          modeLabel: "解析モード",
+          variantLabel: `レベル${level}`,
+          totalQuestions,
+          questions,
+          index: 0,
+          correctCount: 0,
+          inputs: createEmptyInputs("analysis"),
+          activeField: "vertexX",
+          submitted: false,
+          feedback: null,
+          answerLog: [],
+        };
+        setScreen("question");
+      }
+
+      function currentFieldOrder() {
+        const session = getCurrentSession();
+        if (!session) return [];
+        return getFieldOrder(session.modeKey);
+      }
+
+      function setActiveField(field) {
+        const session = getCurrentSession();
+        if (!session) return;
+        session.activeField = field;
+        updateInputUI();
+      }
+
+      function cycleField() {
+        const session = getCurrentSession();
+        if (!session) return;
+        const order = currentFieldOrder();
+        if (!order.length) return;
+        const currentIndex = Math.max(0, order.indexOf(session.activeField));
+        const nextIndex = (currentIndex + 1) % order.length;
+        session.activeField = order[nextIndex];
+        updateInputUI();
+      }
+
+      function toggleSign(text) {
+        const trimmed = String(text ?? "");
+        if (!trimmed) return "-";
+        if (trimmed === "-") return "";
+        if (trimmed.startsWith("-")) {
+          return trimmed.slice(1);
+        }
+        return `-${trimmed}`;
+      }
+
+      function appendKey(key) {
+        const session = getCurrentSession();
+        if (!session || session.submitted) return;
+        const field = session.activeField || currentFieldOrder()[0];
+        if (!field) return;
+        const current = session.inputs[field] ?? "";
+        session.inputs[field] = `${current}${key}`;
+        clearInputErrorFeedback();
+        updateInputUI();
+      }
+
+      function handleKeyAction(action) {
+        const session = getCurrentSession();
+        if (!session) return;
+        if (action === "next") {
+          cycleField();
+          return;
+        }
+        if (action === "answer") {
+          submitAnswer();
+          return;
+        }
+        if (action === "clear") {
+          const field = session.activeField || currentFieldOrder()[0];
+          if (!field) return;
+          session.inputs[field] = "";
+          clearInputErrorFeedback();
+          updateInputUI();
+          return;
+        }
+        if (action === "delete") {
+          const field = session.activeField || currentFieldOrder()[0];
+          if (!field) return;
+          session.inputs[field] = (session.inputs[field] ?? "").slice(0, -1);
+          clearInputErrorFeedback();
+          updateInputUI();
+          return;
+        }
+        if (action === "toggle-sign") {
+          const field = session.activeField || currentFieldOrder()[0];
+          if (!field) return;
+          session.inputs[field] = toggleSign(session.inputs[field] ?? "");
+          clearInputErrorFeedback();
+          updateInputUI();
+        }
+      }
+
+      function clearInputErrorFeedback() {
+        const session = getCurrentSession();
+        if (!session || !session.feedback || session.feedback.kind !== "error") return;
+        session.feedback = null;
+        const feedbackNode = app.querySelector(".feedback.error");
+        if (feedbackNode) feedbackNode.remove();
+      }
+
+      function updateInputUI() {
+        const session = getCurrentSession();
+        if (!session || state.screen !== "question") return;
+        const order = getFieldOrder(session.modeKey);
+        const invalidField = session.feedback && session.feedback.kind === "error" ? session.feedback.invalidField : null;
+
+        app.querySelectorAll(".field-btn[data-field]").forEach((button) => {
+          const field = button.dataset.field;
+          const value = session.inputs[field] ?? "";
+          button.classList.toggle("is-active", field === session.activeField);
+          button.classList.toggle("is-error", field === invalidField);
+          const valueNode = button.querySelector(".field-value");
+          if (valueNode) {
+            valueNode.textContent = value || getFieldPlaceholder();
+            valueNode.classList.toggle("field-placeholder", !value);
+          }
+        });
+
+        const activeLabel = app.querySelector(".keypad-meta .pill");
+        if (activeLabel) {
+          activeLabel.textContent = getFieldLabel(session.modeKey, session.activeField || order[0]);
+        }
+      }
+
+      function parseInputField(text) {
+        return Fraction.parse(text);
+      }
+
+      function validateAndParseInputs(session) {
+        const order = getFieldOrder(session.modeKey);
+        const parsed = {};
+        for (const field of order) {
+          const raw = String(session.inputs[field] ?? "").trim();
+          if (!raw) {
+            return {
+              ok: false,
+              type: "error",
+              message: "未入力の欄があります。すべての欄を入力してください。",
+              invalidField: field,
+            };
+          }
+          try {
+            parsed[field] = parseInputField(raw);
+          } catch {
+            return {
+              ok: false,
+              type: "error",
+              message: "入力形式が正しくありません。整数または分数で入力してください。",
+              invalidField: field,
+            };
+          }
+        }
+        return { ok: true, parsed };
+      }
+
+      function getQuestionAnswer(question) {
+        return question && question.answer ? question.answer : question;
+      }
+
+      function formatSpecificAnswerFromQuestion(question) {
+        const answer = getQuestionAnswer(question);
+        return `a = ${formatValue(answer.a)}, b = ${formatValue(answer.b)}, c = ${formatValue(answer.c)}`;
+      }
+
+      function formatAnalysisAnswerFromQuestion(question) {
+        const answer = getQuestionAnswer(question);
+        return `頂点 (${formatValue(answer.vertexX)}, ${formatValue(answer.vertexY)}) / 軸 ${formatAxis(answer.axisX)}`;
+      }
+
+      function compareSpecific(parsed, question) {
+        const answer = getQuestionAnswer(question);
+        return parsed.a.eq(answer.a) && parsed.b.eq(answer.b) && parsed.c.eq(answer.c);
+      }
+
+      function compareAnalysis(parsed, question) {
+        const answer = getQuestionAnswer(question);
+        return parsed.vertexX.eq(answer.vertexX) && parsed.vertexY.eq(answer.vertexY) && parsed.axisX.eq(answer.axisX);
+      }
+
+      function formatQuestionForReview(question) {
+        if (!question) return "";
+        if (question.kind === "analysis") {
+          return `${question.prompt} ${stripHtml(question.equationHTML ?? "")}`.trim();
+        }
+        return question.prompt;
+      }
+
+      function stripHtml(html) {
+        const div = document.createElement("div");
+        div.innerHTML = String(html ?? "");
+        return div.textContent || div.innerText || "";
+      }
+
+      function createAnswerLogItem(session, question, parsed, isCorrect) {
+        const userAnswer = session.modeKey === "specific"
+          ? `a = ${formatValue(parsed.a)}, b = ${formatValue(parsed.b)}, c = ${formatValue(parsed.c)}`
+          : `頂点 (${formatValue(parsed.vertexX)}, ${formatValue(parsed.vertexY)}) / 軸 ${formatAxis(parsed.axisX)}`;
+        const correctAnswer = session.modeKey === "specific"
+          ? formatSpecificAnswerFromQuestion(question)
+          : formatAnalysisAnswerFromQuestion(question);
+
+        return {
+          number: session.index + 1,
+          isCorrect,
+          questionText: formatQuestionForReview(question),
+          userAnswer,
+          correctAnswer,
+        };
+      }
+
+      function submitAnswer() {
+        const session = getCurrentSession();
+        if (!session || session.submitted) return;
+
+        const currentQuestion = getCurrentQuestion();
+        if (!currentQuestion) return;
+
+        const validation = validateAndParseInputs(session);
+        if (!validation.ok) {
+          session.feedback = {
+            kind: "error",
+            title: "入力エラー",
+            message: validation.message,
+            invalidField: validation.invalidField,
+          };
+          render();
+          return;
+        }
+
+        const parsed = validation.parsed;
+        const isCorrect = session.modeKey === "specific"
+          ? compareSpecific(parsed, currentQuestion)
+          : compareAnalysis(parsed, currentQuestion);
+
+        if (isCorrect) {
+          session.correctCount += 1;
+        }
+
+        const logItem = createAnswerLogItem(session, currentQuestion, parsed, isCorrect);
+        session.answerLog.push(logItem);
+
+        session.submitted = true;
+        session.feedback = {
+          kind: isCorrect ? "success" : "wrong",
+          title: isCorrect ? "正解" : "不正解",
+          message: isCorrect
+            ? "答えが一致しました。"
+            : "正しい答えを確認して、次の問題に進みましょう。",
+          expected: logItem.correctAnswer,
+          user: logItem.userAnswer,
+        };
+        render();
+      }
+
+      function goNextQuestion() {
+        const session = getCurrentSession();
+        if (!session) return;
+        if (!session.submitted) return;
+        if (session.index < session.totalQuestions - 1) {
+          session.index += 1;
+          session.inputs = createEmptyInputs(session.modeKey);
+          session.activeField = getFieldOrder(session.modeKey)[0];
+          session.submitted = false;
+          session.feedback = null;
+          render();
+          return;
+        }
+        finishSession();
+      }
+
+      function finishSession() {
+        const session = getCurrentSession();
+        if (!session) return;
+
+        const summary = {
+          id: cryptoRandomId(),
+          timestamp: new Date().toISOString(),
+          modeLabel: session.modeLabel,
+          variantLabel: session.variantLabel,
+          totalQuestions: session.totalQuestions,
+          correctCount: session.correctCount,
+          accuracy: formatAccuracy(session.correctCount, session.totalQuestions),
+          details: Array.isArray(session.answerLog) ? session.answerLog : [],
+        };
+
+        state.lastResultSummary = summary;
+        state.results = [summary, ...state.results].slice(0, MAX_HISTORY);
+        saveResults(state.results);
+        state.session = null;
+        state.screen = "result";
+        document.body.classList.remove("question-mode");
+        render();
+      }
+
+      function clearHistory() {
+        const confirmed = window.confirm("過去のリザルトをすべて削除しますか？");
+        if (!confirmed) return;
+        state.results = [];
+        saveResults(state.results);
+        render();
+      }
+
+      function patternDescription(pattern) {
+        if (pattern === 1) return "頂点 + 1点";
+        if (pattern === 2) return "軸 + 2点";
+        return "3点";
+      }
+
+      function levelDescription(level) {
+        if (level === 1) return "a = 1、答えも整数";
+        if (level === 2) return "整数係数・答えも整数";
+        return "整数係数・答えは分数あり";
+      }
+
+      function generateSpecificQuestion(pattern) {
+        for (let attempt = 0; attempt < 1500; attempt += 1) {
+          const a = F(pick([-2, -1, 1, 2]));
+          const b = F(randInt(-4, 4));
+          const c = F(randInt(-6, 6));
+
+          // 特定モードの正解 a,b,c は、基本的に整数に限定する。
+          // 今後分数係数を混ぜる場合も、分母が一桁以内のものだけを採用する。
+          if (a.d > 9n || b.d > 9n || c.d > 9n) {
+            continue;
+          }
+
+          const vertexX = b.neg().div(a.mul(2));
+          const vertexY = evaluateQuadratic(a, b, c, vertexX);
+
+          if (!isWithinDisplayRange(vertexX, 7) || !isWithinDisplayRange(vertexY, 8)) {
+            continue;
+          }
+          if (vertexX.d > 12n || vertexY.d > 12n) {
+            continue;
+          }
+
+          const candidateXs = range(-4, 4).map((x) => F(x));
+          if (pattern === 1) {
+            const points = candidateXs
+              .filter((x) => !x.eq(vertexX))
+              .map((x) => ({ x, y: evaluateQuadratic(a, b, c, x) }))
+              .filter((point) => isWithinDisplayRange(point.x, GRAPH_LIMIT) && isWithinDisplayRange(point.y, GRAPH_LIMIT));
+            if (!points.length) continue;
+            const point = pick(points);
+            return {
+              kind: "specific",
+              pattern,
+              prompt: `頂点 ${formatPoint("V", vertexX, vertexY)} と点 ${formatPoint("P", point.x, point.y)} が与えられています。`,
+              graph: {
+                axisX: null,
+                points: [
+                  { label: "V", x: vertexX, y: vertexY, special: true },
+                  { label: "P", x: point.x, y: point.y, special: false },
+                ],
+              },
+              answer: { a, b, c },
+            };
+          }
+
+          if (pattern === 2) {
+            const pairs = [];
+            for (let i = 0; i < candidateXs.length; i += 1) {
+              for (let j = i + 1; j < candidateXs.length; j += 1) {
+                const x1 = candidateXs[i];
+                const x2 = candidateXs[j];
+                const dist1 = x1.sub(vertexX).square();
+                const dist2 = x2.sub(vertexX).square();
+                if (dist1.eq(dist2)) continue;
+                const y1 = evaluateQuadratic(a, b, c, x1);
+                const y2 = evaluateQuadratic(a, b, c, x2);
+                if (!isWithinDisplayRange(y1, GRAPH_LIMIT) || !isWithinDisplayRange(y2, GRAPH_LIMIT)) continue;
+                pairs.push({
+                  x1,
+                  y1,
+                  x2,
+                  y2,
+                });
+              }
+            }
+            if (!pairs.length) continue;
+            const pair = pick(pairs);
+            return {
+              kind: "specific",
+              pattern,
+              prompt: `軸 ${formatAxis(vertexX)} と点 ${formatPoint("P", pair.x1, pair.y1)}、${formatPoint("Q", pair.x2, pair.y2)} が与えられています。`,
+              graph: {
+                axisX: vertexX,
+                points: [
+                  { label: "P", x: pair.x1, y: pair.y1, special: false },
+                  { label: "Q", x: pair.x2, y: pair.y2, special: false },
+                ],
+              },
+              answer: { a, b, c },
+            };
+          }
+
+          const triples = [];
+          for (let i = 0; i < candidateXs.length; i += 1) {
+            for (let j = i + 1; j < candidateXs.length; j += 1) {
+              for (let k = j + 1; k < candidateXs.length; k += 1) {
+                const x1 = candidateXs[i];
+                const x2 = candidateXs[j];
+                const x3 = candidateXs[k];
+                const y1 = evaluateQuadratic(a, b, c, x1);
+                const y2 = evaluateQuadratic(a, b, c, x2);
+                const y3 = evaluateQuadratic(a, b, c, x3);
+                if (!isWithinDisplayRange(y1, GRAPH_LIMIT) || !isWithinDisplayRange(y2, GRAPH_LIMIT) || !isWithinDisplayRange(y3, GRAPH_LIMIT)) {
+                  continue;
+                }
+                triples.push({ x1, y1, x2, y2, x3, y3 });
+              }
+            }
+          }
+          if (!triples.length) continue;
+          const triple = pick(triples);
+          return {
+            kind: "specific",
+            pattern,
+            prompt: `点 ${formatPoint("P", triple.x1, triple.y1)}、${formatPoint("Q", triple.x2, triple.y2)}、${formatPoint("R", triple.x3, triple.y3)} が与えられています。`,
+            graph: {
+              axisX: null,
+              points: [
+                { label: "P", x: triple.x1, y: triple.y1, special: false },
+                { label: "Q", x: triple.x2, y: triple.y2, special: false },
+                { label: "R", x: triple.x3, y: triple.y3, special: false },
+              ],
+            },
+            answer: { a, b, c },
+          };
+        }
+
+        throw new Error("特定モードの問題生成に失敗しました。");
+      }
+
+      function generateAnalysisQuestion(level) {
+        for (let attempt = 0; attempt < 2500; attempt += 1) {
+          let a;
+          let b;
+          let c;
+
+          if (level === 1) {
+            // レベル1：a は 1 固定。答えも整数になるよう、b は偶数に限定する。
+            a = F(1);
+            b = F(pick([-4, -2, 0, 2, 4]));
+            c = F(randInt(-6, 6));
+          } else if (level === 2) {
+            // レベル2：a,b,c は整数。さらに頂点座標・軸も整数になる問題だけを採用する。
+            a = F(pick([-3, -2, -1, 1, 2, 3]));
+            const aInt = Number(a.n);
+            const k = randInt(-3, 3);
+            b = F(-2 * aInt * k);
+            c = F(randInt(-8, 8));
+          } else {
+            // レベル3：a,b,c 自体は整数。ただし頂点座標または頂点のy座標が分数になる問題だけを採用する。
+            a = F(pick([-4, -3, -2, -1, 1, 2, 3, 4]));
+            b = F(randInt(-7, 7));
+            c = F(randInt(-8, 8));
+          }
+
+          const axisX = b.neg().div(a.mul(2));
+          const vertexY = evaluateQuadratic(a, b, c, axisX);
+
+          if (!isWithinDisplayRange(axisX, 8) || !isWithinDisplayRange(vertexY, 8)) {
+            continue;
+          }
+          if (axisX.d > 12n || vertexY.d > 12n) {
+            continue;
+          }
+
+          if (level === 1 && (!axisX.isInteger() || !vertexY.isInteger())) {
+            continue;
+          }
+
+          if (level === 2 && (!axisX.isInteger() || !vertexY.isInteger())) {
+            continue;
+          }
+
+          if (level === 3) {
+            const coefficientsAreIntegers = a.isInteger() && b.isInteger() && c.isInteger();
+            const answerHasFraction = !axisX.isInteger() || !vertexY.isInteger();
+            if (!coefficientsAreIntegers || !answerHasFraction) continue;
+          }
+
+          return {
+            kind: "analysis",
+            level,
+            prompt: `次の二次関数の頂点座標と軸を求めよう。`,
+            equationHTML: formatQuadraticEquation(a, b, c),
+            answer: {
+              vertexX: axisX,
+              vertexY,
+              axisX,
+            },
+          };
+        }
+
+        throw new Error("解析モードの問題生成に失敗しました。");
+      }
+
+      function render() {
+        const previousScrollTop = readQuestionScrollTop();
+        const html = renderScreen();
+        app.innerHTML = html;
+        requestAnimationFrame(() => {
+          restoreQuestionScrollTop(previousScrollTop);
+          drawCurrentGraph();
+        });
+      }
+
+      function readQuestionScrollTop() {
+        const node = app.querySelector(".question-scroll");
+        return node ? node.scrollTop : 0;
+      }
+
+      function restoreQuestionScrollTop(value) {
+        const node = app.querySelector(".question-scroll");
+        if (node) node.scrollTop = value;
+      }
+
+      function renderScreen() {
+        switch (state.screen) {
+          case "specific-setup":
+            return renderSetupScreen("specific");
+          case "analysis-setup":
+            return renderSetupScreen("analysis");
+          case "question":
+            return renderQuestionScreen();
+          case "result":
+            return renderResultScreen();
+          case "home":
+          default:
+            return renderHomeScreen();
+        }
+      }
+
+      function renderHomeScreen() {
+        const history = state.results;
+        return `
+          <div class="screen animate-in">
+            <div class="page-inner stack">
+              <section class="hero">
+                <p class="eyebrow">Quadratic Practice</p>
+                <h1>二次関数演習アプリ</h1>
+                <p>特定モードで式を特定し、解析モードで頂点と軸を求めよう。入力はすべてアプリ内のボタンで行います。</p>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <div>
+                    <h2>学習モードを選ぶ</h2>
+                    <p class="subtle">スマホ向けの縦画面レイアウトです。</p>
+                  </div>
+                </div>
+                <div class="mode-buttons">
+                  <button type="button" class="mode-btn" data-action="open-specific">
+                    <span>特定モード</span>
+                    <span class="small">頂点・軸・3点から式を求める</span>
+                  </button>
+                  <button type="button" class="mode-btn" data-action="open-analysis">
+                    <span>解析モード</span>
+                    <span class="small">式から頂点と軸を求める</span>
+                  </button>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <div>
+                    <h2>過去のリザルト</h2>
+                    <p class="subtle">localStorage に保存した学習記録です。</p>
+                  </div>
+                  <button type="button" class="ghost-btn" data-action="clear-history">リザルト削除</button>
+                </div>
+                <div class="history-list">
+                  ${history.length ? history.map(renderHistoryItem).join("") : `
+                    <div class="history-empty">まだリザルトはありません。まずはモードを選んで演習を始めましょう。</div>
+                  `}
+                </div>
+              </section>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderHistoryItem(item) {
+        return `
+          <article class="history-item">
+            <div class="history-top">
+              <span class="badge">${escapeHtml(item.modeLabel)}</span>
+              <span class="pill">${escapeHtml(item.variantLabel)}</span>
+            </div>
+            <div class="meta-line">${escapeHtml(formatDateTime(item.timestamp))}</div>
+            <div class="history-score">${item.correctCount} / ${item.totalQuestions} ・ ${escapeHtml(item.accuracy)}</div>
+            ${Array.isArray(item.details) && item.details.length ? `<div class="meta-line">間違い：${item.details.filter((detail) => !detail.isCorrect).map((detail) => `${detail.number}問目`).join("、") || "なし"}</div>` : ""}
+          </article>
+        `;
+      }
+
+      function renderSetupScreen(kind) {
+        const isSpecific = kind === "specific";
+        const title = isSpecific ? "特定モード" : "解析モード";
+        const subtitle = isSpecific
+          ? "パターンを選んで、問題数を決めましょう。"
+          : "レベルを選んで、問題数を決めましょう。";
+        const selectedPattern = state.settings.specificPattern;
+        const selectedLevel = state.settings.analysisLevel;
+
+        const options = isSpecific
+          ? [
+              { value: 1, title: "パターン1", sub: "頂点 + 1点", selected: selectedPattern === 1 },
+              { value: 2, title: "パターン2", sub: "軸 + 2点", selected: selectedPattern === 2 },
+              { value: 3, title: "パターン3", sub: "3点", selected: selectedPattern === 3 },
+            ]
+          : [
+              { value: 1, title: "レベル1", sub: "a = 1 / 答えも整数", selected: selectedLevel === 1 },
+              { value: 2, title: "レベル2", sub: "整数係数 / 答えも整数", selected: selectedLevel === 2 },
+              { value: 3, title: "レベル3", sub: "整数係数 / 答えが分数", selected: selectedLevel === 3 },
+            ];
+
+        const countButtons = [5, 10, 15, 20].map((value) => `
+          <button type="button" class="chip-btn ${state.settings.questionCount === value ? "is-active" : ""}" data-action="set-count" data-value="${value}">
+            ${value}問
+          </button>
+        `).join("");
+
+        return `
+          <div class="screen animate-in">
+            <div class="page-inner stack">
+              <header class="screen-header">
+                <div>
+                  <p class="eyebrow">Settings</p>
+                  <h1 class="section-title">${title}</h1>
+                </div>
+                <button type="button" class="ghost-btn" data-action="go-home">ホーム</button>
+              </header>
+
+              <section class="panel setup-grid">
+                <div>
+                  <h2 class="panel-title">${isSpecific ? "パターンを選ぶ" : "レベルを選ぶ"}</h2>
+                  <p class="subtle">${escapeHtml(subtitle)}</p>
+                </div>
+                <div class="chip-grid">
+                  ${options.map((option) => `
+                    <button type="button" class="mode-btn ${option.selected ? "is-active" : ""}" data-action="${isSpecific ? "set-pattern" : "set-level"}" data-value="${option.value}">
+                      <span>${escapeHtml(option.title)}</span>
+                      <span class="small">${escapeHtml(option.sub)}</span>
+                    </button>
+                  `).join("")}
+                </div>
+              </section>
+
+              <section class="panel">
+                <h2 class="panel-title">問題数</h2>
+                <p class="subtle">演習する問題数を選択します。</p>
+                <div class="count-buttons">
+                  ${countButtons}
+                </div>
+              </section>
+
+              <button type="button" class="primary-btn" data-action="${isSpecific ? "start-specific" : "start-analysis"}">問題を始める</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderQuestionScreen() {
+        const session = getCurrentSession();
+        if (!session) {
+          return renderHomeScreen();
+        }
+        const question = getCurrentQuestion();
+        if (!question) {
+          return renderHomeScreen();
+        }
+
+        const fieldOrder = getFieldOrder(session.modeKey);
+        const fields = fieldOrder.map((field) => renderFieldButton(session, field, session.inputs[field] ?? ""));
+        const feedbackHtml = renderFeedback(session, question);
+
+        return `
+          <div class="question-screen animate-in">
+            <div class="question-scroll">
+              <div class="question-shell">
+                <header class="topbar">
+                  <div class="left">
+                    <button type="button" class="ghost-btn" data-action="quit-question">ホーム</button>
+                    <span class="badge">${escapeHtml(session.modeLabel)}</span>
+                    <span class="pill">${escapeHtml(session.variantLabel)}</span>
+                  </div>
+                  <span class="progress">${session.index + 1} / ${session.totalQuestions}</span>
+                </header>
+
+                <section class="hero-card">
+                  <div class="question-summary">
+                    <div>
+                      <div class="badge">${escapeHtml(question.kind === "specific" ? "特定モード" : "解析モード")}</div>
+                      <div class="question-statement" style="margin-top:10px;">${escapeHtml(question.prompt)}</div>
+                    </div>
+                    ${question.kind === "analysis" ? `
+                      <div class="panel" style="margin:0; padding:16px;">
+                        <div class="panel-title">与えられた式</div>
+                        <div class="equation">${question.equationHTML}</div>
+                        <div class="math-line">頂点座標と軸を入力してください。</div>
+                      </div>
+                    ` : `
+                      <div class="math-line">二次関数 y = ax² + bx + c を特定してください。</div>
+                      <div class="graph-frame">
+                        <canvas class="graph-canvas" id="graphCanvas" aria-label="座標平面"></canvas>
+                        <div class="graph-legend">
+                          <span class="pill">青: 一般の点</span>
+                          <span class="pill">赤: 頂点</span>
+                          <span class="pill">破線: 軸</span>
+                        </div>
+                      </div>
+                    `}
+                  </div>
+                </section>
+
+                <section class="fields-panel">
+                  <div class="section-head" style="margin-bottom:10px;">
+                    <div>
+                      <h2>${session.modeKey === "specific" ? "a, b, c を入力" : "頂点と軸を入力"}</h2>
+                      <p class="subtle">選択中の欄が強調表示されます。</p>
+                    </div>
+                  </div>
+                  <div class="field-grid">
+                    ${fields.join("")}
+                  </div>
+                  <div class="field-hint">分数は <strong>1/2</strong> のように入力できます。標準キーボードは使いません。</div>
+                </section>
+
+                ${feedbackHtml}
+              </div>
+            </div>
+
+            <div class="keypad-shell">
+              <div class="keypad-inner">
+                <div class="keypad-meta">
+                  <p class="subtle" style="margin:0;">入力は下のボタンから行います。</p>
+                  <span class="pill">${escapeHtml(getFieldLabel(session.modeKey, session.activeField || fieldOrder[0]))}</span>
+                </div>
+                <div class="keypad-grid">
+                  <button type="button" class="key-btn" data-action="key" data-key="7">7</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="8">8</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="9">9</button>
+                  <button type="button" class="key-btn is-danger" data-action="delete">DEL</button>
+
+                  <button type="button" class="key-btn" data-action="key" data-key="4">4</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="5">5</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="6">6</button>
+                  <button type="button" class="key-btn is-secondary" data-action="clear">CLR</button>
+
+                  <button type="button" class="key-btn" data-action="key" data-key="1">1</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="2">2</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="3">3</button>
+                  <button type="button" class="key-btn is-secondary" data-action="toggle-sign">±</button>
+
+                  <button type="button" class="key-btn" data-action="key" data-key="0">0</button>
+                  <button type="button" class="key-btn" data-action="key" data-key="/">/</button>
+                  <button type="button" class="key-btn is-accent" data-action="next">次の入力欄へ</button>
+                  <button type="button" class="key-btn is-accent" data-action="answer">解答</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderFieldButton(session, field, value) {
+        const isActive = session.activeField === field;
+        const invalidField = session.feedback && session.feedback.kind === "error" ? session.feedback.invalidField : null;
+        const isError = invalidField === field;
+        return `
+          <button type="button" class="field-btn ${isActive ? "is-active" : ""} ${isError ? "is-error" : ""}" data-action="select-field" data-field="${escapeHtml(field)}">
+            <span class="field-label">${escapeHtml(getFieldLabel(session.modeKey, field))}</span>
+            <span class="field-value ${value ? "" : "field-placeholder"}">${value ? escapeHtml(value) : escapeHtml(getFieldPlaceholder())}</span>
+          </button>
+        `;
+      }
+
+      function renderFeedback(session, question) {
+        const feedback = session.feedback;
+        if (!feedback) return "";
+
+        if (feedback.kind === "error") {
+          return `
+            <section class="feedback error" aria-live="polite">
+              <div class="feedback-title">
+                <span>${escapeHtml(feedback.title)}</span>
+                <span class="status">注意</span>
+              </div>
+              <div class="feedback-body">
+                <div>${escapeHtml(feedback.message)}</div>
+              </div>
+            </section>
+          `;
+        }
+
+        return `
+          <section class="feedback ${feedback.kind}" aria-live="polite">
+            <div class="feedback-title">
+              <span>${escapeHtml(feedback.title)}</span>
+              <span class="status">${feedback.kind === "success" ? "OK" : "CHECK"}</span>
+            </div>
+            <div class="feedback-body">
+              <div>${escapeHtml(feedback.message)}</div>
+              <div class="comparison-grid">
+                <div class="comparison-row">
+                  <span>あなたの答え</span>
+                  <strong>${escapeHtml(feedback.user)}</strong>
+                </div>
+                <div class="comparison-row">
+                  <span>正しい答え</span>
+                  <strong>${escapeHtml(feedback.expected)}</strong>
+                </div>
+              </div>
+              <div class="feedback-actions">
+                <button type="button" class="primary-btn" data-action="next-question">${session.index < session.totalQuestions - 1 ? "次の問題へ" : "結果を見る"}</button>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      function renderReviewList(summary) {
+        const details = Array.isArray(summary.details) ? summary.details : [];
+        if (!details.length) {
+          return `
+            <section class="panel">
+              <h2 class="panel-title">問題別レビュー</h2>
+              <div class="history-empty">このリザルトには問題別の記録がありません。次回以降の演習結果から表示されます。</div>
+            </section>
+          `;
+        }
+
+        const wrongItems = details.filter((item) => !item.isCorrect);
+        return `
+          <section class="panel">
+            <div class="section-head">
+              <div>
+                <h2>問題別レビュー</h2>
+                <p class="subtle">間違えた問題と、あなたの答え・正しい答えを確認できます。</p>
+              </div>
+              <span class="pill">間違い ${wrongItems.length}問</span>
+            </div>
+            ${wrongItems.length ? `
+              <div class="review-list">
+                ${wrongItems.map(renderReviewItem).join("")}
+              </div>
+            ` : `
+              <div class="history-empty">全問正解です。間違えた問題はありません。</div>
+            `}
+          </section>
+        `;
+      }
+
+      function renderReviewItem(item) {
+        return `
+          <article class="review-item ${item.isCorrect ? "is-correct" : "is-wrong"}">
+            <div class="review-head">
+              <span class="badge">${Number(item.number)}問目</span>
+              <span class="pill">${item.isCorrect ? "正解" : "不正解"}</span>
+            </div>
+            <div class="review-question">${escapeHtml(item.questionText ?? "")}</div>
+            <div class="review-answer">
+              <div>あなたの答え：<strong>${escapeHtml(item.userAnswer ?? "")}</strong></div>
+              <div>正しい答え：<strong>${escapeHtml(item.correctAnswer ?? "")}</strong></div>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderResultScreen() {
+        const summary = state.lastResultSummary;
+        if (!summary) {
+          return renderHomeScreen();
+        }
+        return `
+          <div class="screen animate-in">
+            <div class="page-inner stack">
+              <section class="result-hero">
+                <p class="eyebrow">Result</p>
+                <h1 class="section-title">演習終了</h1>
+                <div class="result-score">
+                  <div class="big">${summary.correctCount} / ${summary.totalQuestions}</div>
+                  <div class="small">${escapeHtml(summary.accuracy)} 正答率</div>
+                </div>
+                <p class="subtle" style="margin-top:10px;">今回の学習結果を保存しました。</p>
+              </section>
+
+              <section class="panel">
+                <h2 class="panel-title">スコア詳細</h2>
+                <div class="summary-grid">
+                  <div class="summary-card">
+                    <div class="label">モード</div>
+                    <div class="value">${escapeHtml(summary.modeLabel)}</div>
+                  </div>
+                  <div class="summary-card">
+                    <div class="label">パターン / レベル</div>
+                    <div class="value">${escapeHtml(summary.variantLabel)}</div>
+                  </div>
+                  <div class="summary-card">
+                    <div class="label">問題数</div>
+                    <div class="value">${summary.totalQuestions} 問</div>
+                  </div>
+                  <div class="summary-card">
+                    <div class="label">正解数</div>
+                    <div class="value">${summary.correctCount} 問</div>
+                  </div>
+                  <div class="summary-card" style="grid-column: 1 / -1;">
+                    <div class="label">正答率</div>
+                    <div class="value">${escapeHtml(summary.accuracy)}</div>
+                  </div>
+                </div>
+                <div class="meta-row" style="margin-top:12px;">
+                  <span class="pill">日時</span>
+                  <span class="meta-line">${escapeHtml(formatDateTime(summary.timestamp))}</span>
+                </div>
+              </section>
+
+              ${renderReviewList(summary)}
+
+              <div class="result-actions">
+                <button type="button" class="primary-btn" data-action="go-home">ホームへ戻る</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function drawCurrentGraph() {
+        if (state.screen !== "question") return;
+        const session = getCurrentSession();
+        if (!session || session.modeKey !== "specific") return;
+        const question = getCurrentQuestion();
+        if (!question) return;
+        const canvas = document.getElementById("graphCanvas");
+        if (!canvas) return;
+        drawQuestionGraph(canvas, question);
+      }
+
+      function drawQuestionGraph(canvas, question) {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        if (rect.width <= 0 || rect.height <= 0) return;
+
+        const width = Math.round(rect.width * dpr);
+        const height = Math.round(rect.height * dpr);
+        if (canvas.width !== width) canvas.width = width;
+        if (canvas.height !== height) canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        const pad = 28;
+        const plotWidth = rect.width - pad * 2;
+        const plotHeight = rect.height - pad * 2;
+        const minX = -10;
+        const maxX = 10;
+        const minY = -10;
+        const maxY = 10;
+        const xToPx = (x) => pad + ((x - minX) / (maxX - minX)) * plotWidth;
+        const yToPx = (y) => pad + ((maxY - y) / (maxY - minY)) * plotHeight;
+
+        roundRect(ctx, 0, 0, rect.width, rect.height, 18, "#ffffff");
+
+        ctx.save();
+        ctx.lineWidth = 1;
+        for (let i = minX; i <= maxX; i += 1) {
+          const x = xToPx(i);
+          ctx.strokeStyle = i === 0 ? "rgba(29, 38, 56, 0.70)" : "rgba(96, 113, 140, 0.14)";
+          ctx.lineWidth = i === 0 ? 1.7 : 1;
+          ctx.beginPath();
+          ctx.moveTo(x, pad);
+          ctx.lineTo(x, rect.height - pad);
+          ctx.stroke();
+
+          if (i % 2 === 0) {
+            ctx.fillStyle = "rgba(102, 114, 139, 0.80)";
+            ctx.font = "11px sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText(String(i), x, rect.height - pad + 4);
+          }
+        }
+
+        for (let j = minY; j <= maxY; j += 1) {
+          const y = yToPx(j);
+          ctx.strokeStyle = j === 0 ? "rgba(29, 38, 56, 0.70)" : "rgba(96, 113, 140, 0.14)";
+          ctx.lineWidth = j === 0 ? 1.7 : 1;
+          ctx.beginPath();
+          ctx.moveTo(pad, y);
+          ctx.lineTo(rect.width - pad, y);
+          ctx.stroke();
+
+          if (j % 2 === 0) {
+            ctx.fillStyle = "rgba(102, 114, 139, 0.80)";
+            ctx.font = "11px sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(String(j), pad - 6, y);
+          }
+        }
+
+        if (question.graph.axisX !== null && question.graph.axisX !== undefined) {
+          const axisX = Fraction.from(question.graph.axisX).toNumber();
+          if (axisX >= minX && axisX <= maxX) {
+            const x = xToPx(axisX);
+            ctx.save();
+            ctx.strokeStyle = "#0f766e";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([7, 6]);
+            ctx.beginPath();
+            ctx.moveTo(x, pad);
+            ctx.lineTo(x, rect.height - pad);
+            ctx.stroke();
+            ctx.restore();
+            drawLabelTag(ctx, `x = ${formatValue(question.graph.axisX)}`, clamp(x + 4, pad + 4, rect.width - pad - 4), pad + 12, "#0f766e", "#e6fffb");
+          }
+        }
+
+        const points = question.graph.points.slice().sort((a, b) => {
+          if (a.special === b.special) return 0;
+          return a.special ? 1 : -1;
+        });
+
+        for (const point of points) {
+          drawGraphPoint(ctx, xToPx, yToPx, rect, point);
+        }
+
+        ctx.restore();
+      }
+
+      function drawGraphPoint(ctx, xToPx, yToPx, rect, point) {
+        const x = Fraction.from(point.x).toNumber();
+        const y = Fraction.from(point.y).toNumber();
+        const cx = xToPx(x);
+        const cy = yToPx(y);
+        const label = point.label;
+
+        if (point.special) {
+          ctx.save();
+          ctx.fillStyle = "#dc2626";
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2.5;
+          drawDiamond(ctx, cx, cy, 7);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+          drawLabelTag(ctx, label, clamp(cx + 8, 18, rect.width - 18), clamp(cy - 12, 18, rect.height - 18), "#dc2626", "#fff1f1");
+        } else {
+          ctx.save();
+          ctx.fillStyle = "#2563eb";
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+          drawLabelTag(ctx, label, clamp(cx + 8, 18, rect.width - 18), clamp(cy - 12, 18, rect.height - 18), "#1d4ed8", "#eef4ff");
+        }
+      }
+
+      function drawDiamond(ctx, x, y, size) {
+        ctx.beginPath();
+        ctx.moveTo(x, y - size);
+        ctx.lineTo(x + size, y);
+        ctx.lineTo(x, y + size);
+        ctx.lineTo(x - size, y);
+        ctx.closePath();
+      }
+
+      function drawLabelTag(ctx, text, x, y, borderColor, fillColor) {
+        ctx.save();
+        ctx.font = "bold 11px sans-serif";
+        const metrics = ctx.measureText(text);
+        const width = metrics.width + 14;
+        const height = 20;
+        const left = x - 7;
+        const top = y - height / 2;
+        roundRect(ctx, left, top, width, height, 8, fillColor, borderColor);
+        ctx.fillStyle = borderColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, left + width / 2, top + height / 2 + 0.5);
+        ctx.restore();
+      }
+
+      function roundRect(ctx, x, y, width, height, radius, fillStyle, strokeStyle = null) {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + width, y, x + width, y + height, r);
+        ctx.arcTo(x + width, y + height, x, y + height, r);
+        ctx.arcTo(x, y + height, x, y, r);
+        ctx.arcTo(x, y, x + width, y, r);
+        ctx.closePath();
+        if (fillStyle) {
+          ctx.fillStyle = fillStyle;
+          ctx.fill();
+        }
+        if (strokeStyle) {
+          ctx.strokeStyle = strokeStyle;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function handleClick(event) {
+        const button = event.target.closest("button");
+        if (!button) return;
+
+        const action = button.dataset.action;
+        if (!action) return;
+
+        if (action === "open-specific") {
+          openSpecificSetup();
+          return;
+        }
+        if (action === "open-analysis") {
+          openAnalysisSetup();
+          return;
+        }
+        if (action === "go-home") {
+          openHome();
+          return;
+        }
+        if (action === "quit-question") {
+          const confirmed = window.confirm("進行中の問題を終了してホームに戻りますか？");
+          if (!confirmed) return;
+          openHome();
+          return;
+        }
+        if (action === "clear-history") {
+          clearHistory();
+          return;
+        }
+        if (action === "set-pattern") {
+          state.settings.specificPattern = Number(button.dataset.value);
+          render();
+          return;
+        }
+        if (action === "set-level") {
+          state.settings.analysisLevel = Number(button.dataset.value);
+          render();
+          return;
+        }
+        if (action === "set-count") {
+          state.settings.questionCount = Number(button.dataset.value);
+          render();
+          return;
+        }
+        if (action === "start-specific") {
+          startSpecificSession();
+          return;
+        }
+        if (action === "start-analysis") {
+          startAnalysisSession();
+          return;
+        }
+        if (action === "select-field") {
+          const field = button.dataset.field;
+          if (field) setActiveField(field);
+          return;
+        }
+        if (action === "key") {
+          const key = button.dataset.key ?? "";
+          if (key) appendKey(key);
+          return;
+        }
+        if (action === "delete") {
+          handleKeyAction("delete");
+          return;
+        }
+        if (action === "clear") {
+          handleKeyAction("clear");
+          return;
+        }
+        if (action === "toggle-sign") {
+          handleKeyAction("toggle-sign");
+          return;
+        }
+        if (action === "next") {
+          handleKeyAction("next");
+          return;
+        }
+        if (action === "answer") {
+          handleKeyAction("answer");
+          return;
+        }
+        if (action === "next-question") {
+          goNextQuestion();
+        }
+      }
+
+      window.addEventListener("resize", () => {
+        if (state.screen === "question") {
+          requestAnimationFrame(drawCurrentGraph);
+        }
+      });
+
+      app.addEventListener("click", handleClick);
+
+      document.body.classList.remove("question-mode");
+      render();
+    })();
+  </script>
+</body>
+</html>
