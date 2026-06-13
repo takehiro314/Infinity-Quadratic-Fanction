@@ -679,6 +679,14 @@
       backdrop-filter: blur(12px);
     }
 
+    .question-screen.is-submitted .keypad-shell {
+      display: none;
+    }
+
+    .question-screen.is-submitted .question-scroll {
+      padding-bottom: calc(18px + var(--safe-bottom));
+    }
+
     .keypad-inner {
       width: min(calc(100% - 24px), var(--page-max));
       margin: 0 auto;
@@ -1356,6 +1364,7 @@
         if (!session) return;
         session.activeField = field;
         updateInputUI();
+        scrollToActiveField();
       }
 
       function cycleField() {
@@ -1367,6 +1376,7 @@
         const nextIndex = (currentIndex + 1) % order.length;
         session.activeField = order[nextIndex];
         updateInputUI();
+        scrollToActiveField();
       }
 
       function toggleSign(text) {
@@ -1560,6 +1570,7 @@
             invalidField: validation.invalidField,
           };
           render();
+          scrollToFeedback();
           return;
         }
 
@@ -1586,6 +1597,7 @@
           user: logItem.userAnswer,
         };
         render();
+        scrollToFeedback();
       }
 
       function goNextQuestion() {
@@ -1599,6 +1611,7 @@
           session.submitted = false;
           session.feedback = null;
           render();
+          scrollToQuestionTop();
           return;
         }
         finishSession();
@@ -2014,7 +2027,7 @@
         const feedbackHtml = renderFeedback(session, question);
 
         return `
-          <div class="question-screen animate-in">
+          <div class="question-screen animate-in ${session.submitted ? "is-submitted" : ""}">
             <div class="question-scroll">
               <div class="question-shell">
                 <header class="topbar">
@@ -2449,6 +2462,52 @@
 
       function clamp(value, min, max) {
         return Math.max(min, Math.min(max, value));
+      }
+
+      function scrollElementIntoQuestionView(target, block = "center") {
+        if (!target) return;
+        requestAnimationFrame(() => {
+          const scroller = app.querySelector(".question-scroll");
+          if (!scroller || !target.isConnected) return;
+          try {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block,
+              inline: "nearest",
+            });
+          } catch {
+            target.scrollIntoView();
+          }
+        });
+      }
+
+      function scrollToActiveField() {
+        const session = getCurrentSession();
+        if (!session || state.screen !== "question") return;
+        const field = session.activeField;
+        if (!field) return;
+        const target = app.querySelector(`[data-field="${field}"]`);
+        scrollElementIntoQuestionView(target, "center");
+      }
+
+      function scrollToFeedback() {
+        requestAnimationFrame(() => {
+          const target = app.querySelector(".feedback");
+          scrollElementIntoQuestionView(target, "center");
+        });
+      }
+
+      function scrollToQuestionTop() {
+        requestAnimationFrame(() => {
+          const scroller = app.querySelector(".question-scroll");
+          const target = app.querySelector(".hero-card");
+          if (!scroller) return;
+          if (target) {
+            scrollElementIntoQuestionView(target, "start");
+          } else {
+            scroller.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        });
       }
 
       function handleClick(event) {
