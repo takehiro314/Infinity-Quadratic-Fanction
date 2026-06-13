@@ -1104,6 +1104,14 @@
         return list[randInt(0, list.length - 1)];
       }
 
+      function chance(probability) {
+        return Math.random() < probability;
+      }
+
+      function pickWeightedA(unitValues, nonUnitValues, nonUnitProbability) {
+        return F(pick(chance(nonUnitProbability) ? nonUnitValues : unitValues));
+      }
+
       function range(min, max) {
         const values = [];
         for (let i = min; i <= max; i += 1) {
@@ -1310,12 +1318,13 @@
         const totalQuestions = state.settings.questionCount;
         const questions = [];
         for (let i = 0; i < totalQuestions; i += 1) {
-          questions.push(generateSpecificQuestion(pattern));
+          const actualPattern = pattern === 0 ? pick([1, 2, 3]) : pattern;
+          questions.push(generateSpecificQuestion(actualPattern));
         }
         state.session = {
           modeKey: "specific",
           modeLabel: "特定モード",
-          variantLabel: `パターン${pattern}`,
+          variantLabel: pattern === 0 ? "混合" : `パターン${pattern}`,
           totalQuestions,
           questions,
           index: 0,
@@ -1650,6 +1659,7 @@
       }
 
       function patternDescription(pattern) {
+        if (pattern === 0) return "混合";
         if (pattern === 1) return "頂点 + 1点";
         if (pattern === 2) return "軸 + 2点";
         return "3点";
@@ -1663,7 +1673,8 @@
 
       function generateSpecificQuestion(pattern) {
         for (let attempt = 0; attempt < 1500; attempt += 1) {
-          const a = F(pick([-2, -1, 1, 2]));
+          // 特定モードでは、各パターンで約35%の確率で |a| が 1 以外になるようにする。
+          const a = pickWeightedA([-1, 1], [-2, 2], 0.35);
           const b = F(randInt(-4, 4));
           const c = F(randInt(-6, 6));
 
@@ -1794,7 +1805,8 @@
             c = F(randInt(-6, 6));
           } else if (level === 2) {
             // レベル2：a,b,c は整数。さらに頂点座標・軸も整数になる問題だけを採用する。
-            a = F(pick([-3, -2, -1, 1, 2, 3]));
+            // |a| が 1 以外の問題を多めに出すため、約75%の確率で ±2, ±3 を選ぶ。
+            a = pickWeightedA([-1, 1], [-3, -2, 2, 3], 0.75);
             const aInt = Number(a.n);
             const k = randInt(-3, 3);
             b = F(-2 * aInt * k);
@@ -1956,6 +1968,7 @@
 
         const options = isSpecific
           ? [
+              { value: 0, title: "混合", sub: "パターン1〜3をランダム出題", selected: selectedPattern === 0 },
               { value: 1, title: "パターン1", sub: "頂点 + 1点", selected: selectedPattern === 1 },
               { value: 2, title: "パターン2", sub: "軸 + 2点", selected: selectedPattern === 2 },
               { value: 3, title: "パターン3", sub: "3点", selected: selectedPattern === 3 },
